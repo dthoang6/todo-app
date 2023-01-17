@@ -28,7 +28,11 @@ go();
 App.use(express.urlencoded({ extended: false }));
 //step 2: in future we will keep html template in the separated file: hard code fake items.
 App.get("/", function (req, res) {
-  res.send(`
+  /* step 4.2 reading and loading items */
+  db.collection("items")
+    .find()
+    .toArray(function (err, items) {
+      res.send(`
     <!DOCTYPE html>
 <html>
 <head>
@@ -51,27 +55,19 @@ App.get("/", function (req, res) {
     </div>
     
     <ul class="list-group pb-5">
-      <li class="list-group-item list-group-item-action d-flex align-items-center justify-content-between">
-        <span class="item-text">Fake example item #1</span>
-        <div>
-          <button class="edit-me btn btn-secondary btn-sm mr-1">Edit</button>
-          <button class="delete-me btn btn-danger btn-sm">Delete</button>
-        </div>
-      </li>
-      <li class="list-group-item list-group-item-action d-flex align-items-center justify-content-between">
-        <span class="item-text">Fake example item #2</span>
-        <div>
-          <button class="edit-me btn btn-secondary btn-sm mr-1">Edit</button>
-          <button class="delete-me btn btn-danger btn-sm">Delete</button>
-        </div>
-      </li>
-      <li class="list-group-item list-group-item-action d-flex align-items-center justify-content-between">
-        <span class="item-text">Fake example item #3</span>
-        <div>
-          <button class="edit-me btn btn-secondary btn-sm mr-1">Edit</button>
-          <button class="delete-me btn btn-danger btn-sm">Delete</button>
-        </div>
-      </li>
+      ${items
+        .map(function (item) {
+          return `
+            <li class="list-group-item list-group-item-action d-flex align-items-center justify-content-between">
+                <span class="item-text">${item.text}</span>
+                <div>
+                    <button class="edit-me btn btn-secondary btn-sm mr-1">Edit</button>
+                    <button class="delete-me btn btn-danger btn-sm">Delete</button>
+                </div>
+            </li>
+          `;
+        })
+        .join("")}
     </ul>
     
   </div>
@@ -79,6 +75,7 @@ App.get("/", function (req, res) {
 </body>
 </html>
   `);
+    }); //4.2 read database collection and convert it to array,.
 });
 
 App.post("/create-item", function (req, res) {
@@ -89,6 +86,6 @@ App.post("/create-item", function (req, res) {
   //the second argument is a function that will call once to create item in the database.
   //in this case we use call back function rather modern way, we need to use promise, async/await because we don't know how long it will take to create that item in database.
   db.collection("items").insertOne({ text: req.body.item }, function () {
-    res.send("Thanks for submitting the form.");
+    res.redirect("/");
   });
 });
