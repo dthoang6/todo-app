@@ -1,0 +1,28 @@
+- step 1: set up server using express
+- step 2: html template for user interface, styling with bootstrap. Response to get request using App.get to send back the html template when user request the homepage url "/".
+
+- step 3: response to the form being submitted, extract value the user types into the input field using App.post request for url create-item.
+    - update html template for action attribute "/create-item", method attribute for form element to send back the response when user submit data. 
+    - using name attribute "item" for input element to extract the data with req.body.item
+
+- step 4: connect server to database to store data permanently, perform CRUD. (connect a node application to a mongoDB database.)
+  4.1 install, setup mongodb, perform C
+  - install mongodb driver for node: npm install mongodb, give nodejs the ability to work with a mongodb database.
+  - we need to set up a variable to represents a MongoDB database that we've opened a connection to.
+  - using async/await function: connect to database using MongoClient of mongodb package, connection string from mongodb website,.
+  - create operation: app.post, create a new item for mongodb using a database environment
+  4.2 how to read or load the database into the web page.
+  4.3
+  4.4
+  4.5
+  4.6
+
+
+
+
+
+    -concept to understand: 
+        - what is promise?
+        - what the async/await syntax does?
+        - when we should use it?
+    - automatic node server to restart: any time we save a change to the file, node detect the change and automatically update and restart the server for us: npm install nodemon, run nodemon globally using package.json with custom script: "watch": "nodemon server", npm will look in our package.json to run the script, and look into our node_modules folder for the nodemon package. npm run watch

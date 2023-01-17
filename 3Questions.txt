@@ -1,0 +1,30 @@
+1. why was the app we built in with Express is so important?
+- we are at least a little bit familiar with the process of receiving an incoming request.
+- making decision based on the user's input.
+- then sending back a response.
+- understanding this basic cycle of request and response is powerful because that's really all any application does. Lifecycle of http request.
+
+- The real question becomes what do we do in between the request and response?
+
+2.What is the missing ingredient that will let us build more advanced apps?
+- mongodb environment, database system.
+- we want to remember or store user's data.
+- user registration, sign in
+- any time you post a comment, new tweet on Twitter, it's getting saved into a database.
+- learning database in the context of creating an application. Fullstack javascript application.
+
+3. What are we going to do for the remainder of this course?
+ - we are going to build 2 apps.
+ - app 1: small, unorganized, oversimplified. focusing on learning database. Get us comfortable with the big picture, the basic mechanics of building a full stack app.
+    - learn how to stick together the 3 environments: web browser, server, database.
+
+ - app 2: big, organized, real-world.
+  - template engines
+  - user registration
+  - user authentication
+  - security
+  - error handling
+  - staying organized
+  - much more
+  - real world complication
+  - real world best practices.
