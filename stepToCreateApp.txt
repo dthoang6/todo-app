@@ -32,16 +32,48 @@
     - there will be comma between each item, by default that's how js handles the automation conversion of an array into a string of text.
     - join() method let us convert an array into a string of text and we can control what is placed in between each item by default by including an empty pair of quotes in argument.
     - next, generate a little bit of html for each item of array items passing through by return a template literal html with ${item.text}.
-    - setup, as soon as you submit the form, instead of sending you to that thank you screen, just redirects user to the same hompage. Using App.post for "/create-item" and res.redirect('/')
+    - setup, as soon as you submit the form, instead of sending you to that thank you screen, just redirects user to the same homepage. Using App.post for "/create-item" and res.redirect('/')
 
   4.3 Updating a database item
     - 4.3.1 how and where do we give the user a new place to begin typing their updated desire text?
         - write a bit of js for the web browser environment, so the browser send data and request to our server behind the scenes or on the fly without a hard page, refresh, reload, or redirect. this is a new technique.
-        - our goal is to handle the user interface, get the user's new text value to send over to our node server.
+        - at the html template, we include a js script at the body tag to test and then create a browser.js file at public folder to stay organize and load it at the html template.
+        - we need to tell our Express App or server to allow incoming requests to have access to the public folder and its contents.
+        - our goal is to handle the user interface, get the user's new text value to send over to our node server by using axios.post('/update-item', {text: userInput}).then().catch()
+        -finish setup a browser side js code to asynchronously send a request to our node js server.
+        -it means we are successfully using javascript on the front end and back end.
 
-        
-    - 4.3.2 how to write a code that will talk to the mongodb database and update the item?
-        -use our node server to update the document in database
+
+    - 4.3.2 how to write a code that node will talk to the mongodb database and update the item?
+        - use our node server to update the document in database
+        with App.post('/update-item', function(req, res) {...})
+        - db.collection('items').findOneAndUpdate(a, b, c)
+
+        - b = where we told mongo what we want to update on that document, do not need to include the full document here, only include what's being changed
+         {$set: {text: req.body.text}}, req.body.text = userInput
+         - c = include an anonymous function that will get called once this database action has a chance to complete. Send back a response to the browser
+         - a = where we tell mongo which document we want to update. It mean we need to keep track of which edit button of item user click.
+         - let's adjust our html that gets send to the homepage to include that id value for each one of items. using html file feature: data-id="${item._id}"
+         - adjust our browser.js to use axios to send off our asynchronous request to our server to send along id and text of item.
+         - { text: userInput, id: e.target.getAttribute("data-id") }
+         - because mongodb works with id in a special way, we need to create a new instance of something called ObjectID, which is a tool of mongo package.
+
+         - the database aspect of our update feature is complete, but our user interface aspect is not complete.
+         - as soon as database update action is complete, our front end should update on the fly instead of hard refresh or user should not refresh the page. adjust then() in browser.js to manipulate html of class.
+
+         - add 2 more tiny changes that will improve the user experience:
+         - when user click edit, and cancel: wrap the axios code into the if statement
+         - when user click edit, pre-populated with the current or existing value instead of being blank: begin with the edit button, look up its html ancestry, find the span element to pull in the text value of the span element.
+
+
+
+
+
+
+
+
+
+
 
   4.4
   4.5
