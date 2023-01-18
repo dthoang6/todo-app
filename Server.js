@@ -45,12 +45,12 @@ App.get("/", function (req, res) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simple To-Do App!</title>
+  <title>Tom To-Do App!</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
 </head>
 <body>
   <div class="container">
-    <h1 class="display-4 text-center py-1">To-Do App!</h1>
+    <h1 class="display-4 text-center py-1">Tom To-Do App!</h1>
     
     <div class="jumbotron p-3 shadow-sm">
       <form action="/create-item", method = "POST" >
@@ -87,7 +87,7 @@ App.get("/", function (req, res) {
   `);
     }); //4.2 read database collection and convert it to array,.
 });
-
+//setup node app to listen for url /create-item request
 App.post("/create-item", function (req, res) {
   //step 4.1 create a document, collection
   //we need to set up a variable to represents a MongoDB database that we've opened a connection to.
@@ -101,9 +101,17 @@ App.post("/create-item", function (req, res) {
 });
 
 //4.3 receive the data from web browser, communicate with database to update the item.
+//setup node app to listen for url /update-item request on the fly
 App.post("/update-item", function (req, res) {
   //node will talk to database to update the item
   db.collection("items").findOneAndUpdate({ _id: new ObjectId(req.body.id) }, { $set: { text: req.body.text } }, function () {
     res.send("Success.");
+  });
+});
+
+//setup node app to listen for url /delete-item request on the fly
+App.post("/delete-item", function (req, res) {
+  db.collection("items").deleteOne({ _id: new ObjectId(req.body.id) }, function () {
+    res.send("Success Delete.");
   });
 });

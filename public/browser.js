@@ -1,6 +1,22 @@
 /* 4.3.tell the web browser to listen for the event when the edit buttons is clicked on */
 
 document.addEventListener("click", function (e) {
+  //4.4 Delete Feature
+  if (e.target.classList.contains("delete-me")) {
+    if (confirm("Do you really want to delete this item permanently?")) {
+      //use axios to have the browser send off an asynchronous or on the fly request to our node server.
+      axios
+        .post("/delete-item", { id: e.target.getAttribute("data-id") })
+        .then(function () {
+          e.target.parentElement.parentElement.remove();
+        })
+        .catch(function () {
+          console.log("Please try again later.");
+        });
+    }
+  }
+
+  //4.3.1 Edit Feature
   //if the element that was clicked on contains a class of edit me
   if (e.target.classList.contains("edit-me")) {
     //give user a place to type in and save it to a variable.

@@ -6,13 +6,16 @@
     - using name attribute "item" for input element to extract the data with req.body.item
 
 - step 4: connect server to database to store data permanently, perform CRUD. (connect a node application to a mongoDB database.)
+
   4.1 install, setup mongodb, perform C
+
   - install mongodb driver for node: npm install mongodb, give nodejs the ability to work with a mongodb database.
   - we need to set up a variable to represents a MongoDB database that we've opened a connection to.
   - using async/await function: connect to database using MongoClient of mongodb package, connection string from mongodb website,.
   - create operation: app.post, create a new item for mongodb using a database environment
 
   4.2 how to read or load the database into the web page. Write a bit of code to load items from within our node app so we can display them to the user.
+
     - begin with app.get when someone send a get request. we no longer want to send back our response the millisecond this request comes in. we want to first read data from a database and then wait until that database action complete and we have the data before we actually send back our response.
 
     - using find() to read items collection and convert that data to an array to work with javascript using toArray().
@@ -35,6 +38,7 @@
     - setup, as soon as you submit the form, instead of sending you to that thank you screen, just redirects user to the same homepage. Using App.post for "/create-item" and res.redirect('/')
 
   4.3 Updating a database item
+
     - 4.3.1 how and where do we give the user a new place to begin typing their updated desire text?
         - write a bit of js for the web browser environment, so the browser send data and request to our server behind the scenes or on the fly without a hard page, refresh, reload, or redirect. this is a new technique.
         - at the html template, we include a js script at the body tag to test and then create a browser.js file at public folder to stay organize and load it at the html template.
@@ -47,6 +51,7 @@
     - 4.3.2 how to write a code that node will talk to the mongodb database and update the item?
         - use our node server to update the document in database
         with App.post('/update-item', function(req, res) {...})
+
         - db.collection('items').findOneAndUpdate(a, b, c)
 
         - b = where we told mongo what we want to update on that document, do not need to include the full document here, only include what's being changed
@@ -65,26 +70,27 @@
          - when user click edit, and cancel: wrap the axios code into the if statement
          - when user click edit, pre-populated with the current or existing value instead of being blank: begin with the edit button, look up its html ancestry, find the span element to pull in the text value of the span element.
 
+  4.4 Deleting a database item
 
-
-
-
-
-
-
-
-
-
-  4.4
-  4.5
+    - browser.js: we do the same thing for class delete-me
+    - when someone clicks on one of our delete buttons, we want to program the web browser to send off a request to our node server with the id of the document that should be deleted.
+  
+  4.5 Adjust create item to create new item without page reload.
+  - in many situations, you would want a traditional form submit.
+  - we set up our update, delete features to use on the fly or asynchronous requests.
+  - we may improve our create feature to use asynchronous request to.
+  
   4.6
 
-
-
-
+db.collection('items').insertOne(a, b)
+db.collection('items').findOneAndUpdate(a, b, c)
+db.collection('items').find().toArray(function(err, items){...})
+db.collection('items').deleteOne(a, b)
 
     -concept to understand: 
         - what is promise?
         - what the async/await syntax does?
         - when we should use it?
     - automatic node server to restart: any time we save a change to the file, node detect the change and automatically update and restart the server for us: npm install nodemon, run nodemon globally using package.json with custom script: "watch": "nodemon server", npm will look in our package.json to run the script, and look into our node_modules folder for the nodemon package. npm run watch
+
+    - POST request: we an send post request by submitting the form, or using axios.post(a, b).then(c).catch(d) or fetch to send post request on the fly. server will receive the request using app.post(a, b)
