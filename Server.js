@@ -3,6 +3,7 @@ let express = require("express");
 //step 4.1
 //we want to look inside of mongodb package for something called: Mongo Client, and we can use destructuring object to pull out 4 or 5 different things of mongodb package instead of just MongoClient.
 let { MongoClient, ObjectId } = require("mongodb");
+let sanitizeHTML = require("sanitize-html");
 
 /* let mongodb = require(mongodb); //we are not going to use the package directly
  */
@@ -33,8 +34,21 @@ App.use(express.json());
 //tell express to automatically take submitted form data and add it to a body object that lives on the request object.
 App.use(express.urlencoded({ extended: false }));
 
+//set up user login with username and pass.
+function passwordProtected(req, res, next) {
+  //prompt the visitor to enter a username and password
+  res.set("WWW-Authenticate", "Basic realm='Tom To do App'");
+  if (req.headers.authorization == "Basic bGVhcm46amF2YXNjcmlwdA==") {
+    next();
+  } else {
+    res.status(401).send("Authentication required");
+  }
+}
+//add a function to all of your routes or url.
+App.use(passwordProtected);
 //step 2: in future we will keep html template in the separated file: hard code fake items.
 App.get("/", function (req, res) {
+  //the ideal is that after We provided the listening url, we can provide multiple functions and express will call each function once at a time in a row. get rid of passwordProtected in the argument and use a way to add a function to all of your routes or url.
   /* step 4.2 reading and loading items */
   db.collection("items")
     .find()
@@ -53,32 +67,22 @@ App.get("/", function (req, res) {
     <h1 class="display-4 text-center py-1">Tom To-Do App!</h1>
     
     <div class="jumbotron p-3 shadow-sm">
-      <form action="/create-item", method = "POST" >
+      <form id="create-form" action="/create-item", method = "POST" >
         <div class="d-flex align-items-center">
-          <input name="item" autofocus autocomplete="off" class="form-control mr-3" type="text" style="flex: 1;">
+          <input id="create-field" name="item" autofocus autocomplete="off" class="form-control mr-3" type="text" style="flex: 1;">
           <button class="btn btn-primary">Add New Item</button>
         </div>
       </form>
     </div>
     
-    <ul class="list-group pb-5">
-      ${items
-        .map(function (item) {
-          return `
-            <li class="list-group-item list-group-item-action d-flex align-items-center justify-content-between">
-                <span class="item-text">${item.text}</span>
-                <div>
-                    <button data-id="${item._id}" class="edit-me btn btn-secondary btn-sm mr-1">Edit</button>
-                    <button data-id="${item._id}" class="delete-me btn btn-danger btn-sm">Delete</button>
-                </div>
-            </li>
-          `;
-        })
-        .join("")}
+    <ul id="item-list" class="list-group pb-5">
+      
     </ul>
     
   </div>
-
+  <script>
+        let items = ${JSON.stringify(items)};
+  </script>
   <script src="https://unpkg.com/axios@1.1.2/dist/axios.min.js"></script>
   <script src="/browser.js"></script>
 
@@ -87,7 +91,7 @@ App.get("/", function (req, res) {
   `);
     }); //4.2 read database collection and convert it to array,.
 });
-//setup node app to listen for url /create-item request
+/* //setup node app to listen for url /create-item request for full reload
 App.post("/create-item", function (req, res) {
   //step 4.1 create a document, collection
   //we need to set up a variable to represents a MongoDB database that we've opened a connection to.
@@ -98,14 +102,24 @@ App.post("/create-item", function (req, res) {
   db.collection("items").insertOne({ text: req.body.item }, function () {
     res.redirect("/");
   });
+}); */
+//set up node server to listen for asynchronous request from web browser for create item feature.
+App.post("/create-item", function (req, res) {
+  //insurance policy with sanitize-html
+  let safeText = sanitizeHTML(req.body.text, { allowedTags: [], allowedAttributes: {} });
+  db.collection("items").insertOne({ text: safeText }, function (err, info) {
+    res.json({ _id: info.insertedId, text: safeText }); //sending back the js object that represents the newest document in the database from the server to browser. Browser can access it from axios then method.
+  });
 });
 
 //4.3 receive the data from web browser, communicate with database to update the item.
 //setup node app to listen for url /update-item request on the fly
 App.post("/update-item", function (req, res) {
+  let safeText = sanitizeHTML(req.body.text, { allowedTags: [], allowedAttributes: {} });
+
   //node will talk to database to update the item
-  db.collection("items").findOneAndUpdate({ _id: new ObjectId(req.body.id) }, { $set: { text: req.body.text } }, function () {
-    res.send("Success.");
+  db.collection("items").findOneAndUpdate({ _id: new ObjectId(req.body.id) }, { $set: { text: safeText } }, function () {
+    res.send("Success Update.");
   });
 });
 

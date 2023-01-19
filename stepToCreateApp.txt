@@ -78,9 +78,49 @@
   4.5 Adjust create item to create new item without page reload.
   - in many situations, you would want a traditional form submit.
   - we set up our update, delete features to use on the fly or asynchronous requests.
-  - we may improve our create feature to use asynchronous request to.
-  
-  4.6
+  - we may improve our create feature to use asynchronous request.
+
+  - when the user tries to submit their item input, instead of relying on our node app to redirect us to this same url, and then rerender the entire page just to see new item, let's instead use axios to send off an asynchronous request with whatever value user typed in.
+
+  - then we can use front end js to simply add on one new list item at the bottom of this list.
+  - starting by add id to form, input, ul element to hook for browser.
+  - using axios to send asynchronous request
+
+  - setup node server to listening for async request
+  - setup itemTemplate for adding html on the fly when server response: how can we have a browser be aware of that unique id that was just created so that we can add it on to the new edit and delete buttons for newly created item?
+
+    - using res.json() is a popular way of sending data back and forth, our goal here is to simply send back a js object that represents the new mongo document that was just created.
+    - send back an object by return an an object with one property id with value of info.
+
+App.post("/create-item", function (req, res) {
+  db.collection("items").insertOne({ text: req.body.text }, function (err, info) {
+    res.json({ _id: info.insertedId, text: req.body.text });
+  });
+});
+
+
+  4.6 Client Side Rendering - remove duplicate code.
+  - how to avoid the duplicate code in server.js and  itemTemplate in browser.js: we can use client side rendering / browser side rendering.
+  - what is client side rendering? Instead of generating html for our dynamic data on the server side and then sending that html to the web browser, the server would only send the browser the raw data with client side rendering.
+  - the raw data is items array.
+  - then it would be up to the web browser to use the items array to generate the html.
+  - we staring by send the items array from server to the browsers by including this at body tag:
+  <script>
+        let items = ${JSON.stringify(items)};
+  </script>
+
+  - stringify method will convert js data or JSON into a string of text.
+  - starting to work with browsers to generate html from raw data.
+
+5. Security:
+ - what is security?
+ - add basic password protection: set up user login with username and pass.
+ - add an insurance policy so we can project ourselves from basic hacking: if a user can run a js pop up, that means they can run anything they want. Because anyone that visit our app will be exposed to this potentially dangerous js.
+ - using package sanitize-html
+ - when some one typed something into this field, let's use our node server to clean up and make sure that it's normal before we accept it to our database.
+ - in future, we will have a proper template engine generating our html view, so the user's input would never actually be executed like this. It would show up visually like this, which is completely harmless.
+
+6. Push the app to the web
 
 db.collection('items').insertOne(a, b)
 db.collection('items').findOneAndUpdate(a, b, c)

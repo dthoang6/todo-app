@@ -1,5 +1,46 @@
-/* 4.3.tell the web browser to listen for the event when the edit buttons is clicked on */
+/* step 4.5: write a browser based code to detect the submit event for that create form for create feature */
+function itemTemplate(item) {
+  return `
+            <li class="list-group-item list-group-item-action d-flex align-items-center justify-content-between">
+                <span class="item-text">${item.text}</span>
+                <div>
+                    <button data-id="${item._id}" class="edit-me btn btn-secondary btn-sm mr-1">Edit</button>
+                    <button data-id="${item._id}" class="delete-me btn btn-danger btn-sm">Delete</button>
+                </div>
+            </li>
+          `;
+}
 
+//Initial page load render and use the raw data which is items array from server to generate the html.
+let ourHTML = items
+  .map(function (item) {
+    return itemTemplate(item);
+  })
+  .join("");
+
+document.getElementById("item-list").insertAdjacentHTML("beforeend", ourHTML);
+
+//create feature
+let createField = document.getElementById("create-field");
+
+document.getElementById("create-form").addEventListener("submit", function (e) {
+  e.preventDefault();
+  //use axios to have the browser send off an asynchronous or on the fly request to our node server.
+  axios
+    .post("/create-item", { text: createField.value })
+    .then(function (response) {
+      //this line of code will run when our server response the object using res.json(response object) by passing through as argument response
+      //create html for new item on the fly without reload
+      document.getElementById("item-list").insertAdjacentHTML("beforeend", itemTemplate(response.data)); //response.data will access that js object that represents the newest document in the database that the server is sending back to our browser.
+      createField.value = "";
+      createField.focus();
+    })
+    .catch(function () {
+      console.log("Please try again later.");
+    });
+});
+
+/* 4.3.tell the web browser to listen for the event when the edit buttons is clicked on */
 document.addEventListener("click", function (e) {
   //4.4 Delete Feature
   if (e.target.classList.contains("delete-me")) {
